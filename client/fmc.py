@@ -13,7 +13,16 @@ class FlexMusic(object):
     Open source library designed to interface the FlexMusic server with pycord/discord.py bot clients.\n
     Development started and maintained by https://github.com/89mpxf.
     '''
-    
+    # Exceptions
+    class Exception(object):
+        class BaseException(Exception):
+            '''Base exception for all FlexMusic client errors'''
+            pass
+
+        class NoResultsFound(BaseException):
+            '''Raised when a search request returns no results'''
+            pass
+
     # Client request scheduler
     class _ClientRequestScheduler(object):
         '''
@@ -74,6 +83,10 @@ class FlexMusic(object):
             print("Debug mode is currently active.")
             
         async def connect(self):
+            '''
+            Main coroutine to start the FlexMusic client and bind the connection to the event loop.\n
+            This coroutine should be called after the Discord client's event loop has started (i.e. on the "on_ready" event)\n
+            '''
             if self.debug:
                 print(f"Connecting to {self.host}:{self.port}...")
             while (self.read, self.write) == (None, None):
@@ -87,6 +100,11 @@ class FlexMusic(object):
                     await asyncio.sleep(5)
 
         async def search(self, query: str = None, service: str = "youtube", amount: int = 10):
+            '''
+            Main track search function.\n
+            By default, this will search YouTube.\n
+            This function returns a list of Track objects found with the given query, up to the maximum amount defined.
+            '''
             if query is None or amount is None:
                 return
 
@@ -123,8 +141,11 @@ class FlexMusic(object):
             resp = json.loads(data.decode())
             output = []
             if resp["success"] is True:
-                for i in range(len(resp["response"])):
-                    output.append(FlexMusic.Track(resp["response"][i]["source"], resp["response"][i]["id"], resp["response"][i]["title"], resp["response"][i]["artist"], resp["response"][i]["duration"], resp["response"][i]["cover"]))
-                return output
+                if len(resp["response"]) > 0:
+                    for i in range(len(resp["response"])):
+                        output.append(FlexMusic.Track(resp["response"][i]["source"], resp["response"][i]["id"], resp["response"][i]["title"], resp["response"][i]["artist"], resp["response"][i]["duration"], resp["response"][i]["cover"]))
+                    return output
+                else:
+                    raise FlexMusic.Exception.NoResultsFound
 
 
