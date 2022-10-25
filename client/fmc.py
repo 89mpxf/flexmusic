@@ -15,6 +15,7 @@ class FlexMusic(object):
     '''
     # Exceptions
     class Exception(object):
+        '''All FlexMusic client exceptions'''
         class BaseException(Exception):
             '''Base exception for all FlexMusic client errors'''
             pass
