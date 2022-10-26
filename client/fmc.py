@@ -90,8 +90,9 @@ class FlexMusic(object):
             self.host, self.port = host, port
             self.scheduler = FlexMusic._ClientRequestScheduler()
             self.debug = debug
-            print("FlexMusic Client successfully initialized")
-            print("Debug mode is currently active.")
+            if self.debug:
+                print("FlexMusic Client successfully initialized")
+                print("Debug mode is currently active.")
             
         async def connect(self):
             '''
@@ -104,7 +105,8 @@ class FlexMusic(object):
                 try:
                     self.read, self.write = await asyncio.open_connection(self.host, self.port)
                     if self.read is not None and self.write is not None:
-                        print(f"Connected to FlexMusic server at {self.host}:{str(self.port)} successfully.")
+                        if self.debug:
+                            print(f"Connected to FlexMusic server at {self.host}:{str(self.port)} successfully.")
                 except:
                     if self.debug:
                         print(f"Failed to connect to {self.host}:{self.port}, retrying in 5 seconds...")
@@ -133,7 +135,8 @@ class FlexMusic(object):
                 print(f"Queued client request (Job ID: {str(id)})")
 
             while not self.scheduler.ready(id):
-                print(f"Client is busy. Waiting to start job... (Job ID: {str(id)})")
+                if self.debug:
+                    print(f"Client is busy. Waiting to start job... (Job ID: {str(id)})")
                 await asyncio.sleep(1)
 
             self.write.write(json.dumps(payload).encode())
