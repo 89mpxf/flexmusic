@@ -1,6 +1,6 @@
 # Import dependencies
 import asyncio
-from discord import FFmpegPCMAudio, PCMVolumeTransformer
+from discord import FFmpegPCMAudio, PCMVolumeTransformer, Bot, AutoShardedBot
 from time import sleep
 import json
 
@@ -13,9 +13,14 @@ class FlexMusic(object):
     Open source library designed to interface the FlexMusic server with pycord/discord.py bot clients.\n
     Development started and maintained by https://github.com/89mpxf.
     '''
+
     # Exceptions
     class Exception(object):
-        '''All FlexMusic client exceptions'''
+        '''
+        FlexMusic Client exception parent class\n
+        All client exceptions/errors exist within this class
+        '''
+
         class BaseException(Exception):
             '''Base exception for all FlexMusic client errors'''
             pass
@@ -68,13 +73,19 @@ class FlexMusic(object):
             return f"<FlexMusic.Track title={self.title} artist={self.artist} duration={str(self.duration)} id={self.id}>"
 
         @property
-        def stream(self):
+        def src(self):
             '''Returns the PCM audio stream of the track to be played by the client.'''
             return FFmpegPCMAudio(self.source, **FFMPEG_OPTIONS)
 
     # Main client import
     class FMClient(object):
-        def __init__(self, client, debug: bool = False, host: str = "localhost", port: int = 5000):
+        '''
+        FlexMusic Client (FMClient) object.\n
+        By default, this client attempts to connect to localhost:5000. If the FlexMusic server you are using exists on a different port or machine, supply the "host" or "port" arguments.\n
+        The only required argument is a Discord bot object. This is so the even
+        '''
+
+        def __init__(self, client: Bot | AutoShardedBot, debug: bool = False, host: str = "localhost", port: int = 5000):
             self.event_loop = client.loop
             self.read, self.write = None, None
             self.host, self.port = host, port
@@ -148,5 +159,3 @@ class FlexMusic(object):
                     return output
                 else:
                     raise FlexMusic.Exception.NoResultsFound
-
-
