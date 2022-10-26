@@ -1,7 +1,7 @@
 # FlexMusic
 FlexMusic is a lightweight alternative for other music backends used for Discord bot development. While still following a client-server model, FlexMusic takes a different approach by leaving the handling of audio streams themselves to the client, rather than handling audio streams within the server and passing them along to the client. This allows for a significant performance uplift and much higher stability than other backend options.
 
-Furthermore, the FlexMusic client integrates seemlessly alongside [pycord](https://github.com/Pycord-Development/pycord)'s Client/Bot event loop, allowing for easy and performant deployment. The example code snippet below breaks down how this integration works and how the FlexMusic client interacts with the FlexMusic server and the Discord client at runtime.
+Furthermore, the FlexMusic client integrates seemlessly alongside [pycord](https://github.com/Pycord-Development/pycord)'s Client/Bot event loop, allowing for easy and performant deployment. The example code below demonstrates this integration.
 
 ```python
 import discord
