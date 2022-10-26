@@ -1,6 +1,6 @@
 # Import dependencies
 import asyncio
-from discord import FFmpegPCMAudio, PCMVolumeTransformer, Bot, AutoShardedBot
+from discord import FFmpegPCMAudio, PCMVolumeTransformer
 from time import sleep
 import json
 
@@ -85,8 +85,7 @@ class FlexMusic(object):
         The only required argument is a Discord bot object. This is so the even
         '''
 
-        def __init__(self, client: Bot | AutoShardedBot, debug: bool = False, host: str = "localhost", port: int = 5000):
-            self.event_loop = client.loop
+        def __init__(self, debug: bool = False, host: str = "localhost", port: int = 5000):
             self.read, self.write = None, None
             self.host, self.port = host, port
             self.scheduler = FlexMusic._ClientRequestScheduler()
