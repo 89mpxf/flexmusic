@@ -21,7 +21,7 @@ async def play(ctx, *, query):
     await ctx.defer()
     results = await FMClient.search(query, amount=1) # Send a search request to the FlexMusic server
     voice = await ctx.author.voice.channel.connect() 
-    voice.play(results[0].stream) # Play the audio stream data returned from the FlexMusic server
+    voice.play(results[0].src) # Play the audio stream data returned from the FlexMusic server
   
 client.run(token) # Run Discord client event loop
 ```
