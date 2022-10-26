@@ -9,7 +9,7 @@ from discord.ext import commands
 from fmc import FlexMusic # Import FlexMusic client library
 
 client = commands.Bot() # Initialize Discord client
-fmclient = FlexMusic.FMClient(client) # Initialize FMClient with Discord client's event loop
+fmclient = FlexMusic.FMClient() # Initialize FMClient
 
 @client.event
 async def on_ready():
