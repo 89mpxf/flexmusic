@@ -56,7 +56,6 @@ class YoutubeServiceHandler(object):
                 results.append(data)
             else:
                 for i in range(len(raw_data["entries"])):
-                    print(raw_data["entries"][i])
                     data = {}
                     data["id"] = raw_data["entries"][i]["id"]
                     data["title"] = raw_data["entries"][i]["title"]
