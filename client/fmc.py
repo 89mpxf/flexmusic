@@ -1,3 +1,14 @@
+#
+# FlexMusic Client Library
+# Designed for integration with pycord/discord.py Discord API applications
+# 
+# This library is open source and intended for use with FlexMusic servers
+# FlexMusic is an open source music retrieval server that works as a backend for Discord app development
+# More information about FlexMusic can be found at https://github.com/89mpxf/flexmusic
+# 
+# FlexMusic, created by mpxf (https://github.com/89mpxf)
+#
+
 # Import dependencies
 import asyncio
 from discord import FFmpegPCMAudio, PCMVolumeTransformer
@@ -268,4 +279,3 @@ class FlexMusic(object):
                     raise FlexMusic.Exception.NoResultsFound
             else:
                 raise FlexMusic.Exception.ServerRaisedError
-
