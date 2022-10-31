@@ -240,7 +240,7 @@ class FlexMusic(object):
 
             payload = {
                 "service": service,
-                "operation": "search",
+                "operation": "get",
                 "payload": {
                     "url": url,
                 }
