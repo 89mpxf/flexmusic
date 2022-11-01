@@ -19,6 +19,12 @@ class Track(object):
     def __repr__(self):
         return f"<FlexMusic.Track title={self.title} artist={self.artist} duration={str(self.duration)} id={self.id}>"
 
+    def __eq__(self, other):
+        if isinstance(other, Track):
+            return self.title == other.title and self.artist == other.artist and self.duration == other.duration and self.cover == other.cover and self.id == other.id and self.source == other.source
+        else:
+            return False
+
     @property
     def src(self):
         '''Returns the PCM audio stream of the track to be played by the client.'''
