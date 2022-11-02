@@ -26,6 +26,6 @@ class Track(object):
             return False
 
     @property
-    def src(self):
+    def src(self) -> FFmpegPCMAudio:
         '''Returns the PCM audio stream of the track to be played by the client.'''
         return FFmpegPCMAudio(self.source, **FFMPEG_OPTIONS)

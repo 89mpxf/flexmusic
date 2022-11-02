@@ -13,7 +13,8 @@ class FMClient(object):
     The only required argument is a Discord bot object. This is so the even
     '''
 
-    def __init__(self, debug: bool = False, host: str = "localhost", port: int = 5000):
+    def __init__(self, client, debug: bool = False, host: str = "localhost", port: int = 5000):
+        self.client = client
         self.read, self.write = None, None
         self.host, self.port = host, port
         self.scheduler = _ClientRequestScheduler()
@@ -21,6 +22,55 @@ class FMClient(object):
         if self.debug:
             print("FlexMusic Client successfully initialized")
             print("Debug mode is currently active.")
+
+    # Internal event monitoring task
+    async def _listen_for_events(self):
+        _internal_session_cache = {}
+        while True:
+            _active_clients = []
+            for voice_client in self.client.voice_clients:
+                _active_clients.append(str(voice_client.channel.id))
+                if str(voice_client.channel.id) not in _internal_session_cache:
+                    self.client.dispatch("player_join", voice_client)
+                    if self.debug:
+                        print(f"Dispatched player_join event ({str(voice_client.channel.id)})")
+                    _internal_session_cache[f"{voice_client.channel.id}"] = {}
+                    _internal_session_cache[f"{voice_client.channel.id}"]["playing"] = voice_client.is_playing()
+                    _internal_session_cache[f"{voice_client.channel.id}"]["paused"] = voice_client.is_paused()
+                    continue
+
+                if voice_client.is_playing() is not _internal_session_cache[f"{voice_client.channel.id}"]["playing"]:
+                    if voice_client.is_playing() is False:
+                        self.client.dispatch("track_end", voice_client)
+                        if self.debug:
+                            print(f"Dispatched track_end event ({str(voice_client.channel.id)})")
+                    else:
+                        self.client.dispatch("track_start", voice_client)
+                        if self.debug:
+                            print(f"Dispatched track_start event ({str(voice_client.channel.id)})")
+                    _internal_session_cache[f"{voice_client.channel.id}"]["playing"] = voice_client.is_playing()
+
+                if voice_client.is_paused() is not _internal_session_cache[f"{voice_client.channel.id}"]["paused"]:
+                    if voice_client.is_paused() is False:
+                        self.client.dispatch("track_pause", voice_client)
+                        if self.debug:
+                            print(f"Dispatched track_pause event ({str(voice_client.channel.id)})")
+                    else:
+                        self.client.dispatch("track_resume", voice_client)
+                        if self.debug:
+                            print(f"Dispatched track_resume event ({str(voice_client.channel.id)})")
+                    _internal_session_cache[f"{voice_client.channel.id}"]["paused"] = voice_client.is_playing()
+            
+            _temp = {}
+            for client in _internal_session_cache.keys():
+                if client in _active_clients:
+                    _temp[f"{client}"] = _internal_session_cache[f"{client}"]
+                else:
+                    self.client.dispatch("player_leave", int(client))
+                    if self.debug:
+                        print(f"Dispatched player_leave event ({client})")
+            _internal_session_cache = _temp
+            await asyncio.sleep(0.01)
     
     # Client connection coroutine, call after event loop starts
     async def connect(self):
@@ -40,6 +90,8 @@ class FMClient(object):
                 if self.debug:
                     print(f"Failed to connect to {self.host}:{self.port}, retrying in 5 seconds...")
                 await asyncio.sleep(5)
+        asyncio.create_task(self._listen_for_events())
+        print("Started background event dispatcher")
 
     async def search(self, query: str = None, service: str = "youtube", amount: int = 10):
         '''
