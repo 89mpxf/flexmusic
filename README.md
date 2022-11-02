@@ -9,7 +9,7 @@ from discord.ext import commands
 from fmc import FlexMusic # Import FlexMusic client library
 
 client = commands.Bot() # Initialize Discord client
-fmclient = FlexMusic.FMClient() # Initialize FMClient
+fmclient = FlexMusic.FMClient(client) # Initialize FMClient
 
 @client.event
 async def on_ready():
@@ -31,3 +31,22 @@ At the moment, the FlexMusic client and server are both in extremely early stage
 - Proper stability/endurance testing
 - More services (Vimeo, SoundCloud, Spotify, etc.)
 - More contributors / maintainers (hit me up :D)
+
+# Documentation
+
+## Event Reference
+The FlexMusic client's binding to the Discord client allows for monitoring of active voice clients. FlexMusic takes advantage of this by creating custom events relating to player and track status that can be handled as regular Discord events. These events can be found below.
+
+### player_join
+```python
+@client.event
+async def on_player_join(voice_client: discord.VoiceClient):
+```
+Called when the player officially connects to the voice channel and the player is finished being internally cached. Returns the voice client object of the player that raised the event.
+
+### player_leave
+```python
+@client.event
+async def on_player_leave(channel_id: int):
+```
+Called when Discord reports that the voice client of the player has disconnected and the player is finished being cleaned up from the internal cache. Returns the integer ID of the channel the player left from.
