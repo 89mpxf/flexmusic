@@ -10,3 +10,4 @@ FlexMusic, created by mpxf (https://github.com/89mpxf)
 from .src.exception import Exception
 from .src.fmclient import FMClient
 from .src.track import Track
+import util
