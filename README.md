@@ -50,3 +50,31 @@ Called when the player officially connects to the voice channel and the player i
 async def on_player_leave(channel_id: int):
 ```
 Called when Discord reports that the voice client of the player has disconnected and the player is finished being cleaned up from the internal cache. Returns the integer ID of the channel the player left from.
+
+### track_start
+```python
+@client.event
+async def on_track_start(voice_client: discord.VoiceClient):
+```
+Called when Discord reports that track playback has begun. Returns the voice client object of the player that raised the event.
+
+### track_pause
+```python
+@client.event
+async def on_track_pause(voice_client: discord.VoiceClient):
+```
+Called when Discord reports that the player has been paused. Returns the voice client object of the player that raised the event.
+
+### track_resume
+```python
+@client.event
+async def on_track_resume(voice_client: discord.VoiceClient):
+```
+Called when Discord reports that the player has been resumed. Returns the voice client object of the player that raised the event.
+
+### track_end
+```python
+@client.event
+async def on_track_end(voice_client: discord.VoiceClient):
+```
+Called when Discord reports that track playback has stopped. This does not mean that the track played all the way through, this event is raised whenever a track ends at all. Returns the voice client object of the player that raised the event.
