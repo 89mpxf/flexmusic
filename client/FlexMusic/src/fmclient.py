@@ -1,10 +1,11 @@
 # Import dependencies
-import asyncio, json, time
+import asyncio, json, discord
 
 # Import local dependencies
 from .exception import Exception
 from .track import Track
 from ._clientrequestscheduler import _ClientRequestScheduler
+from .fmplayer import FMPlayer
 
 class FMClient(object):
     '''
@@ -19,6 +20,7 @@ class FMClient(object):
         self.host, self.port = host, port
         self.scheduler = _ClientRequestScheduler()
         self.debug = debug
+        self._internal_player_cache = []
         if self.debug:
             print("FlexMusic Client successfully initialized")
             print("Debug mode is currently active.")
@@ -93,7 +95,43 @@ class FMClient(object):
         asyncio.create_task(self._listen_for_events())
         print("Started background event dispatcher")
 
-    async def search(self, query: str = None, service: str = "youtube", amount: int = 10):
+    async def new_player(self, channel: discord.VoiceChannel) -> FMPlayer:
+        '''
+        Main player creation coroutine\n
+        This function creates a voice client, wraps it in a FMPlayer object, and returns it.\n
+        This will also register this player to the internal player cache of the current FMClient session.
+        '''
+        voice_client = await channel.connect()
+        fmplayer = FMPlayer(voice_client)
+        self._internal_player_cache.append(fmplayer)
+        return fmplayer
+
+    async def get_player(self, context: discord.VoiceChannel | discord.Guild | discord.ApplicationContext | int) -> None | FMPlayer:
+        '''
+        Main player fetching coroutine\n
+        This function will get the player for the guild/voice channel based off of the context provided.\n
+        If no players are found, or exist, this will return None.\n
+        Note: for integer inputs, only numerical Guild/Channel IDs are accepted
+        '''
+        if isinstance(context, discord.VoiceChannel):
+            for i in range(len(self._internal_player_cache)):
+                if context.id == self._internal_player_cache[i].channel.id:
+                    return self._internal_player_cache[i]
+        elif isinstance(context, discord.Guild):
+            for i in range(len(self._internal_player_cache)):
+                if context.id == self._internal_player_cache[i].guild.id:
+                    return self._internal_player_cache[i]
+        elif isinstance(context, discord.ApplicationContext):
+            for i in range(len(self._internal_player_cache)):
+                if context.guild.id == self._internal_player_cache[i].guild.id:
+                    return self._internal_player_cache[i]
+        elif isinstance(context, int):
+            for i in range(len(self._internal_player_cache)):
+                if context in [self._internal_player_cache[i].channel.id, self._internal_player_cache[i].guild.id]:
+                    return self._internal_player_cache[i]
+        return None
+
+    async def search(self, query: str = None, service: str = "youtube", amount: int = 10) -> list[Track]:
         '''
         Main track search function.\n
         By default, this will search YouTube.\n
@@ -148,7 +186,7 @@ class FMClient(object):
         else:
             raise Exception.ServerRaisedError
 
-    async def get(self, url: str = None, service: str = "youtube"):
+    async def get(self, url: str = None, service: str = "youtube") -> list[Track]:
         '''
         Main direct URL handling function.\n
         By default, this treats all URLs as YouTube URLs. URLs for a different service or file path will require providing a service manually.\n
