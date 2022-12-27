@@ -95,6 +95,10 @@ class FMClient(object):
         asyncio.create_task(self._listen_for_events())
         print("Started background event dispatcher")
 
+    #
+    # Player management corountines
+    #
+
     async def new_player(self, channel: discord.VoiceChannel) -> FMPlayer:
         '''
         Main player creation coroutine\n
@@ -113,6 +117,10 @@ class FMClient(object):
         If no players are found, or exist, this will return None.\n
         Note: for integer inputs, only numerical Guild/Channel IDs are accepted
         '''
+
+        if len(self._internal_player_cache) == 0:
+            return None
+
         if isinstance(context, discord.VoiceChannel):
             for i in range(len(self._internal_player_cache)):
                 if context.id == self._internal_player_cache[i].channel.id:
@@ -130,6 +138,23 @@ class FMClient(object):
                 if context in [self._internal_player_cache[i].channel.id, self._internal_player_cache[i].guild.id]:
                     return self._internal_player_cache[i]
         return None
+
+    async def destroy_player(self, player: FMPlayer):
+        '''
+        Main player destruction coroutine\n
+        This function will destroy the given player, and remove it from the internal player cache.
+        '''
+        await player.destroy()
+        self._internal_player_cache.remove(player)
+
+    async def destroy_all_players(self):
+        '''
+        Main player destruction coroutine\n
+        This function will destroy all players in the internal player cache.
+        '''
+        for player in self._internal_player_cache:
+            await player.destroy()
+        self._internal_player_cache = []
 
     async def search(self, query: str = None, service: str = "youtube", amount: int = 10) -> list[Track]:
         '''
