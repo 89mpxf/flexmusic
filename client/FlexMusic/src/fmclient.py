@@ -11,7 +11,7 @@ class FMClient(object):
     '''
     FlexMusic Client (FMClient) object.\n
     By default, this client attempts to connect to localhost:5000. If the FlexMusic server you are using exists on a different port or machine, supply the "host" or "port" arguments.\n
-    The only required argument is a Discord bot object. This is so the even
+    The only required argument is a Discord bot object. This is so the FMClient can run alongside the client event loop to dispatch events and manage the connection and requests to the FlexMusic server.\n
     '''
 
     def __init__(self, client, debug: bool = False, host: str = "localhost", port: int = 5000):
