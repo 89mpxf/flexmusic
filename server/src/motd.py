@@ -1,11 +1,13 @@
 # Import dependencies
-import platform
+from platform import platform, python_version, python_compiler, python_implementation, system
 
 def splash(hostname, port):
     print("")
     print(" FlexMusic Server")
-    print(" Open-source socket-based music streaming server for Discord")
+    print(" Open-source music backend server for Discord")
     print("")
-    print(f" Running on {hostname}:{port}")
-    print(f" OS: {platform.platform()}")
+    print(f" Listening for connections on {hostname}:{port}")
+    print("")
+    print(f" OS: {platform()}")
+    print(f" Python: {python_version()} [{python_implementation()} ({python_compiler()})]")
     print("")
