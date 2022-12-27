@@ -9,17 +9,17 @@ class _ClientRequestScheduler(object):
         self._finished_jobs = 0
 
     @property
-    def latest_job_id(self):
+    def latest_job_id(self) -> int:
         return len(self._job_queue)
 
-    def queue_job(self):
+    def queue_job(self) -> int:
         self._job_queue.append(job_id := int(len(self._job_queue)))
         return job_id
 
     def finish_job(self):
         self._finished_jobs += 1
 
-    def ready(self, id):
+    def ready(self, id) -> bool:
         if id == self._finished_jobs:
             return True
         else:
