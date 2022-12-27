@@ -1,4 +1,2 @@
-client/bot.py
 __pycache__/
-client/test_client.py
-client/cogs/music.py
+.vscode/
