@@ -3,7 +3,7 @@ import discord
 
 # Import local dependencies
 from .track import Track
-from ..util.queue import Queue
+from ..util._queue import Queue
 
 class FMPlayer(discord.VoiceClient):
     def __init__(self, voice_client: discord.VoiceClient):
