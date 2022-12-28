@@ -31,37 +31,37 @@ class FMClient(object):
         while True:
             _active_clients = []
             for voice_client in self.client.voice_clients:
-                _active_clients.append(str(voice_client.channel.id))
-                if str(voice_client.channel.id) not in _internal_session_cache:
-                    self.client.dispatch("player_join", voice_client)
-                    if self.debug:
-                        print(f"Dispatched player_join event ({str(voice_client.channel.id)})")
-                    _internal_session_cache[f"{voice_client.channel.id}"] = {}
-                    _internal_session_cache[f"{voice_client.channel.id}"]["playing"] = voice_client.is_playing()
-                    _internal_session_cache[f"{voice_client.channel.id}"]["paused"] = voice_client.is_paused()
-                    continue
+                if voice_client := self.get_player(voice_client.channel.id) is not None:
+                    _active_clients.append(str(voice_client.channel.id))
+                    if str(voice_client.channel.id) not in _internal_session_cache:
+                        if self.debug:
+                            print(f"Dispatched player_join event ({str(voice_client.channel.id)})")
+                        _internal_session_cache[f"{voice_client.channel.id}"] = {}
+                        _internal_session_cache[f"{voice_client.channel.id}"]["playing"] = voice_client.is_playing()
+                        _internal_session_cache[f"{voice_client.channel.id}"]["paused"] = voice_client.is_paused()
+                        continue
 
-                if voice_client.is_playing() is not _internal_session_cache[f"{voice_client.channel.id}"]["playing"]:
-                    if voice_client.is_playing() is False:
-                        self.client.dispatch("track_end", voice_client)
-                        if self.debug:
-                            print(f"Dispatched track_end event ({str(voice_client.channel.id)})")
-                    else:
-                        self.client.dispatch("track_start", voice_client)
-                        if self.debug:
-                            print(f"Dispatched track_start event ({str(voice_client.channel.id)})")
-                    _internal_session_cache[f"{voice_client.channel.id}"]["playing"] = voice_client.is_playing()
+                    if voice_client.is_playing() is not _internal_session_cache[f"{voice_client.channel.id}"]["playing"]:
+                        if voice_client.is_playing() is False:
+                            self.client.dispatch("track_end", voice_client)
+                            if self.debug:
+                                print(f"Dispatched track_end event ({str(voice_client.channel.id)})")
+                        else:
+                            self.client.dispatch("track_start", voice_client)
+                            if self.debug:
+                                print(f"Dispatched track_start event ({str(voice_client.channel.id)})")
+                        _internal_session_cache[f"{voice_client.channel.id}"]["playing"] = voice_client.is_playing()
 
-                if voice_client.is_paused() is not _internal_session_cache[f"{voice_client.channel.id}"]["paused"]:
-                    if voice_client.is_paused() is False:
-                        self.client.dispatch("track_pause", voice_client)
-                        if self.debug:
-                            print(f"Dispatched track_pause event ({str(voice_client.channel.id)})")
-                    else:
-                        self.client.dispatch("track_resume", voice_client)
-                        if self.debug:
-                            print(f"Dispatched track_resume event ({str(voice_client.channel.id)})")
-                    _internal_session_cache[f"{voice_client.channel.id}"]["paused"] = voice_client.is_playing()
+                    if voice_client.is_paused() is not _internal_session_cache[f"{voice_client.channel.id}"]["paused"]:
+                        if voice_client.is_paused() is False:
+                            self.client.dispatch("track_pause", voice_client)
+                            if self.debug:
+                                print(f"Dispatched track_pause event ({str(voice_client.channel.id)})")
+                        else:
+                            self.client.dispatch("track_resume", voice_client)
+                            if self.debug:
+                                print(f"Dispatched track_resume event ({str(voice_client.channel.id)})")
+                        _internal_session_cache[f"{voice_client.channel.id}"]["paused"] = voice_client.is_playing()
             
             _temp = {}
             for client in _internal_session_cache.keys():
