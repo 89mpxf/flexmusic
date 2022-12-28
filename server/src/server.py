@@ -4,7 +4,7 @@ from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 # Import local dependencies
 from src.session import SessionManager, session_bootstrapper
 from src.motd import splash
-from .shutdown import shutdown
+from .shutdown import shutdown, close_server
 
 def start_server(host: str = "0.0.0.0", port: int = 5000) -> socket:
     server = socket(AF_INET, SOCK_STREAM)
@@ -25,7 +25,7 @@ def runtime(server: socket):
     except:
         raise
     finally:
-        server.close()
+        close_server(server)
 
 def bootstrap():
     runtime(start_server())
