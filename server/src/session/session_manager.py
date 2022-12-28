@@ -3,7 +3,7 @@ class SessionManager:
         self._sessions = []
 
     @property
-    def sessions(self):
+    def sessions(self) -> list:
         return self._sessions
 
     def add_session(self, session):
