@@ -19,6 +19,10 @@ class FMPlayer(VoiceClient):
         This method adds support for FlexMusic Track objects.
         """
         if isinstance(track, Track):
-            self._voice_client.play(track.src, after=after)
+            if after is not None:
+                return self._voice_client.play(track.src, after=after)
+            return self._voice_client.play(track.src)
         else:
-            self._voice_client.play(track, after=after)
+            if after is not None:
+                return self._voice_client.play(track, after=after)
+            return self._voice_client.play(track)
