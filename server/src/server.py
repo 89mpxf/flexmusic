@@ -4,6 +4,7 @@ from socket import socket, AF_INET, SOCK_STREAM, SOL_SOCKET, SO_REUSEADDR
 # Import local dependencies
 from src.session import SessionManager, session_bootstrapper
 from src.motd import splash
+from .shutdown import shutdown
 
 def start_server(host: str = "0.0.0.0", port: int = 5000) -> socket:
     server = socket(AF_INET, SOCK_STREAM)
@@ -20,9 +21,11 @@ def runtime(server: socket):
             sock, addr = server.accept()
             session_bootstrapper(sock, addr, session_manager)
     except KeyboardInterrupt:
-        pass
+        shutdown(session_manager)
     except:
         raise
+    finally:
+        server.close()
 
 def bootstrap():
     runtime(start_server())
