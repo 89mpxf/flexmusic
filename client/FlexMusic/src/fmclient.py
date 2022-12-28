@@ -31,7 +31,7 @@ class FMClient(object):
         while True:
             _active_clients = []
             for voice_client in self.client.voice_clients:
-                if voice_client := self.get_player(voice_client.channel.id) is not None:
+                if (voice_client := await self.get_player(voice_client.channel.id)) is not None:
                     _active_clients.append(str(voice_client.channel.id))
                     if str(voice_client.channel.id) not in _internal_session_cache:
                         if self.debug:
