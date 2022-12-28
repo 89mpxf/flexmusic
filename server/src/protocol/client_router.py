@@ -1,6 +1,3 @@
-# Import dependencies
-import json
-
 # Import local dependencies
 from ..services.youtube import YoutubeServiceHandler
 from ..util import logTime
@@ -9,7 +6,7 @@ class ClientRouter(object):
     def __init__(self):
         self.YoutubeServiceHandler = YoutubeServiceHandler()
 
-    def route(self, data):
+    def route(self, data) -> dict:
         try:
             if data["service"] == "youtube":
                 if data["operation"] == "search":

@@ -1,7 +1,7 @@
 # Import dependencies
-import time
-import yt_dlp
-import multiprocessing as mp
+from time import perf_counter as time
+from yt_dlp import YoutubeDL as YoutubeDLP
+from multiprocessing import Pool
 from youtube_dl import YoutubeDL
 
 # Import local dependencies
@@ -25,27 +25,27 @@ class YoutubeServiceHandler(object):
             'extract_flat': True
         }
 
-    def _process_audio_stream(self, data: dict):
+    def _process_audio_stream(self, data: dict) -> dict:
         with YoutubeDL(self.source_retrieval_options) as api:
             data['source'] = api.extract_info(f"https://youtube.com/watch?v={data['id']}", download=False)["formats"][0]["url"]
         return data
 
-    def get_audio_streams(self, sources: list):
+    def get_audio_streams(self, sources: list[dict]) -> list[dict]:
         print(logTime() + f"Fetching audio streams for {len(sources)} sources...")
-        st = time.time()
-        pool = mp.Pool(processes=len(sources))
+        st = time()
+        pool = Pool(processes=len(sources))
         processed_sources = pool.map(self._process_audio_stream, sources)
-        et = time.time()
+        et = time()
         print(logTime() + f"Successfully fetched audio streams for {len(sources)} sources ({str(round(et - st, 2))}s)")
         return processed_sources
 
-    def search(self, query: str, amount: int = 10):
+    def search(self, query: str, amount: int = 10) -> list[dict]:
         search_results = []
-        with yt_dlp.YoutubeDL(self.search_options) as api:
+        with YoutubeDLP(self.search_options) as api:
             print(logTime() + f"Executing YouTube search with query '{query}'...")
-            st = time.time()
+            st = time()
             raw_data = api.extract_info(f"ytsearch{amount}:{query}", download=False)["entries"]
-            et = time.time()
+            et = time()
             print(logTime() + f"YouTube query finished with {len(raw_data)} results ({str(round(et - st, 2))}s)")
             for i in range(len(raw_data)):
                 data = {}
@@ -61,13 +61,13 @@ class YoutubeServiceHandler(object):
         search_results = self.get_audio_streams(search_results)
         return search_results
 
-    def get(self, url: str):
+    def get(self, url: str) -> list[dict]:
         results = []
-        with yt_dlp.YoutubeDL(self.search_options) as api:
+        with YoutubeDLP(self.search_options) as api:
             print(logTime() + f"Getting YouTube data from '{url}'...")
-            st = time.time()
+            st = time()
             raw_data = api.extract_info(url, download=False)
-            et = time.time()
+            et = time()
             print(logTime() + f"YouTube data fetch for '{url}' completed ({str(round(et - st, 2))}s)")
             if not "entries" in raw_data:
                 data = {}
