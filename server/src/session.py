@@ -19,6 +19,6 @@ class SessionManager:
         self._sessions.remove(session)
 
 def session_bootstrapper(sock: socket, addr: tuple[str, int], session_manager: SessionManager):
-    session = ClientHandler(sock, addr)
+    session = ClientHandler(sock, addr, session_manager)
     session.start()
     session_manager.add_session(session)
