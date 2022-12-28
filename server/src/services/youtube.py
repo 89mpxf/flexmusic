@@ -51,7 +51,10 @@ class YoutubeServiceHandler(object):
                 data = {}
                 data["id"] = raw_data[i]["id"]
                 data["title"] = raw_data[i]["title"]
-                data["artist"] = raw_data[i]["uploader"]
+                try:
+                    data["artist"] = raw_data[i]["uploader"]
+                except KeyError:
+                    data["artist"] = raw_data[i]["channel"]
                 data["duration"] = raw_data[i]["duration"]
                 try:
                     data["cover"] = raw_data[i]["thumbnail"]
@@ -73,7 +76,10 @@ class YoutubeServiceHandler(object):
                 data = {}
                 data["id"] = raw_data["id"]
                 data["title"] = raw_data["title"]
-                data["artist"] = raw_data["uploader"]
+                try:
+                    data["artist"] = raw_data["uploader"]
+                except KeyError:
+                    data["artist"] = raw_data["channel"]
                 data["duration"] = raw_data["duration"]
                 try:
                     data["cover"] = raw_data["thumbnail"]
@@ -85,7 +91,10 @@ class YoutubeServiceHandler(object):
                     data = {}
                     data["id"] = raw_data["entries"][i]["id"]
                     data["title"] = raw_data["entries"][i]["title"]
-                    data["artist"] = raw_data["entries"][i]["uploader"]
+                    try:
+                        data["artist"] = raw_data["entries"][i]["uploader"]
+                    except KeyError:
+                        data["artist"] = raw_data["entries"][i]["channel"]
                     data["duration"] = raw_data["entries"][i]["duration"]
                     try:
                         data["cover"] = raw_data["entries"][i]["thumbnail"]
