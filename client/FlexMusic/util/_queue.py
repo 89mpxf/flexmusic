@@ -15,9 +15,9 @@ class Queue(object):
     # Class method definition
     #
 
-    def add(self, *args: Track | list[Track]):
+    def add(self, *args: Track):
         '''Adds the provided Track object(s) to the queue'''
-        self._queue.extend(*args)
+        self._queue.extend(args)
 
     def empty(self):
         '''Empty the queue and reset the position'''
